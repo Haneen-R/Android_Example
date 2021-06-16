@@ -10,11 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.model.Station
 
 
-class StationAdapter(stations: ArrayList<Station>) :
-    RecyclerView.Adapter<StationAdapter.ViewHolder>() {
-    private var stations: ArrayList<Station>
+class StationAdapter(): RecyclerView.Adapter<StationAdapter.ViewHolder>() {
+    private lateinit var stations: ArrayList<Station>
 
-    init {
+    constructor(stations: ArrayList<Station>) : this() {
         this.stations = stations
     }
 

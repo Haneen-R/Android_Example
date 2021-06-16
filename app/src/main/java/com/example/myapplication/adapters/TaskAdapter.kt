@@ -17,17 +17,17 @@ import com.example.myapplication.util.Utils
 import com.google.android.material.chip.Chip
 
 
-open class TaskAdapter(tasks: ArrayList<Task>,onTodoClickListener: OnTodoClickListener) :
+open class TaskAdapter():
     RecyclerView.Adapter<TaskAdapter.ViewHolder>(), Filterable {
 
-    var tasks: ArrayList<Task>
-    var searchTasks: ArrayList<Task>
-    var onTodoClickListener: OnTodoClickListener
+    lateinit var tasks: ArrayList<Task>
+    lateinit var searchTasks: ArrayList<Task>
+    lateinit var onTodoClickListener: OnTodoClickListener
 
-    init {
+    constructor(tasks: ArrayList<Task>, onTodoClickListener: OnTodoClickListener) : this() {
         this.tasks = tasks
-        searchTasks= ArrayList(tasks)
-        this.onTodoClickListener=onTodoClickListener
+        searchTasks = tasks
+        this.onTodoClickListener = onTodoClickListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
