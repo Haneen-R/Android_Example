@@ -44,7 +44,6 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
     lateinit var calendar: Calendar
     lateinit var myTask:Task
     var dueDate:Date?=null
-    //var sharedViewModel:SharedViewModel
     var isEdit:Boolean = false
     var priority: Priority?=null
     lateinit var tasks:ArrayList<Task>
