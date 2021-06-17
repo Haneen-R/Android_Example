@@ -1,5 +1,4 @@
 package com.example.myapplication.util
-
 import android.content.Context
 import android.graphics.Color
 import android.view.View
@@ -9,7 +8,6 @@ import com.example.myapplication.model.Priority
 import com.example.myapplication.model.Task
 import java.text.SimpleDateFormat
 import java.util.*
-
 
  class Utils {
      fun formatDate(date: Date): String {
