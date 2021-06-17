@@ -19,11 +19,9 @@ import com.google.android.material.chip.Chip
 
 open class TaskAdapter():
     RecyclerView.Adapter<TaskAdapter.ViewHolder>(), Filterable {
-
     lateinit var tasks: ArrayList<Task>
     lateinit var searchTasks: ArrayList<Task>
     lateinit var onTodoClickListener: OnTodoClickListener
-
     constructor(tasks: ArrayList<Task>, onTodoClickListener: OnTodoClickListener) : this() {
         this.tasks = tasks
         searchTasks = tasks
@@ -31,13 +29,13 @@ open class TaskAdapter():
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context)
+        val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.todo_row, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val task:Task= tasks[position]
+        val task = tasks[position]
         holder.updateTask(task)
     }
 
@@ -48,27 +46,30 @@ open class TaskAdapter():
         val radioButton: AppCompatRadioButton = itemView.findViewById(R.id.todo_radio_button)
         val taskText: AppCompatTextView = itemView.findViewById(R.id.todo_row_todo)
         val todayChip: Chip = itemView.findViewById(R.id.todo_row_chip)
-        val deleteTask:ImageButton=itemView.findViewById(R.id.delete_task)
-        var todoClickListener: OnTodoClickListener=onTodoClickListener
+        val deleteTask: ImageButton = itemView.findViewById(R.id.delete_task)
+        var todoClickListener: OnTodoClickListener = onTodoClickListener
 
         fun updateTask(task:Task){
             val util=Utils()
-            val formatted: String = util.formatDate(task.getDueDateTask())
-            val states=arrayOf(intArrayOf(-android.R.attr.state_enabled),intArrayOf(android.R.attr.state_enabled))
-            val colors=
+            val formatted = util.formatDate(task.getDueDateTask())
+            val states =
+                arrayOf(intArrayOf(-android.R.attr.state_enabled),
+                    intArrayOf(android.R.attr.state_enabled))
+            val colors =
                 intArrayOf(Color.LTGRAY, //disabled
                     util.priorityColor(task))
             val colorStateList = ColorStateList(states,colors)
               taskText.text = task.getTaskString()
-              todayChip.text=formatted
+              todayChip.text = formatted
               todayChip.setTextColor(util.priorityColor(task))
-              todayChip.setChipIconTint(colorStateList)
-              radioButton.setButtonTintList(colorStateList)
+            todayChip.chipIconTint = colorStateList
+            radioButton.buttonTintList = colorStateList
               deleteTask.setOnClickListener(this)
               itemView.setOnClickListener(this)
         }
+
         override fun onClick(view: View) {
-            val currTask: Task = tasks.get(adapterPosition)
+            val currTask = tasks[adapterPosition]
             val id = view.id
             if (id == R.id.todo_row_layout) {
                 onTodoClickListener.onTodoClick(currTask)
@@ -85,7 +86,6 @@ open class TaskAdapter():
                 if(constraint==null|| constraint.isEmpty()){
                     filteredList.addAll(searchTasks)
                 }else{
-
                     val filterPattern:String=constraint.toString().lowercase().trim()
                     for (task:Task in searchTasks){
                         if(task.getTaskString().lowercase().contains(filterPattern)){

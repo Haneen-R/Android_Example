@@ -1,4 +1,4 @@
-package com.example.myapplication.fragments
+package com.example.myapplication.ui
 
 import android.app.Dialog
 import android.graphics.Color
@@ -7,13 +7,11 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.*
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.MenuItemCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.adapters.OnTodoClickListener
 import com.example.myapplication.adapters.TaskAdapter
@@ -21,12 +19,10 @@ import com.example.myapplication.model.Priority
 import com.example.myapplication.model.Task
 import com.example.myapplication.util.Prefs
 import com.example.myapplication.util.Utils
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
-
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -42,16 +38,13 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
     private var param2: String? = null
     lateinit var dialog: Dialog
     lateinit var calendar: Calendar
-    lateinit var myTask:Task
-    var dueDate:Date?=null
-    //var sharedViewModel:SharedViewModel
-    var isEdit:Boolean = false
-    var priority: Priority?=null
-    lateinit var tasks:ArrayList<Task>
+    lateinit var dueDate: Date
+    lateinit var priority: Priority
+    lateinit var tasks: ArrayList<Task>
     lateinit var taskAdpater: TaskAdapter
     lateinit var recyclerView: RecyclerView
-    lateinit var prefs:Prefs
-    var idTask:Long=1
+    lateinit var prefs: Prefs
+    var idTask:Long = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,43 +56,40 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view=inflater.inflate(R.layout.fragment_page_two, container, false)
-        prefs= Prefs()
-        tasks= context?.let { prefs.readTaskList(it) }!!
-
-
-        recyclerView =view.findViewById(R.id.recycler_view)
+        prefs = Prefs()
+        tasks = context?.let { prefs.readTaskList(it) }!!
+        recyclerView = view.findViewById(R.id.recycler_view)
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
-        dialog= context?.let { Dialog(it) }!!
+        dialog = context?.let { Dialog(it) }!!
         fab.setOnClickListener { view: View? -> showDialog() }
         recyclerView.setHasFixedSize(true)
         val linearLayoutManager= LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = linearLayoutManager
-        taskAdpater= TaskAdapter(tasks,this)
+        taskAdpater = TaskAdapter(tasks,this)
         recyclerView.adapter=taskAdpater
 
         return view
     }
 
-    private fun showDialog() {
-        val utils=Utils()
+    private fun pair(): Pair<Button, EditText> {
+        val utils = Utils()
         dialog.setContentView(R.layout.tododialog)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val imageViewClose: ImageView =dialog.findViewById(R.id.imageViewClose)
-        val saveBtn: Button =dialog.findViewById(R.id.save_btn)
-        calendar= Calendar.getInstance()
-        val enterTodo: EditText=dialog.findViewById(R.id.enter_todo_et)
-        val calendarButton: ImageButton=dialog.findViewById(R.id.today_calendar_button)
-        val priorityButton: ImageButton=dialog.findViewById(R.id.priority_todo_button)
-        val priorityRadioGroup: RadioGroup=dialog.findViewById(R.id.radioGroup_priority)
+        val imageViewClose: ImageView = dialog.findViewById(R.id.imageViewClose)
+        val saveBtn: Button = dialog.findViewById(R.id.save_btn)
+        calendar = Calendar.getInstance()
+        val enterTodo: EditText = dialog.findViewById(R.id.enter_todo_et)
+        val calendarButton: ImageButton = dialog.findViewById(R.id.today_calendar_button)
+        val priorityButton: ImageButton = dialog.findViewById(R.id.priority_todo_button)
+        val priorityRadioGroup: RadioGroup = dialog.findViewById(R.id.radioGroup_priority)
         var selectedRadioButton: RadioButton
         var selectedButtonId: Int
-        val calendarView:CalendarView=dialog.findViewById(R.id.calendar_view)
-        val calendarGroup: Group =dialog.findViewById(R.id.calendar_group)
+        val calendarView: CalendarView = dialog.findViewById(R.id.calendar_view)
+        val calendarGroup: Group = dialog.findViewById(R.id.calendar_group)
         val todayChip: Chip = dialog.findViewById(R.id.today_chip)
         todayChip.setOnClickListener(this)
         val tomorrowChip: Chip = dialog.findViewById(R.id.tomorrow_chip)
@@ -113,18 +103,22 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
                 utils.hideSoftKeyboard(view12)
             }
         }
-        calendarView.setOnDateChangeListener { calendarView: CalendarView?, year: Int, month: Int, dayOfMoth: Int ->
+
+        calendarView.setOnDateChangeListener {
+            calendarView: CalendarView, year: Int, month: Int, dayOfMoth: Int ->
             calendar.clear()
             calendar[year, month] = dayOfMoth
             dueDate = calendar.time
         }
+
         priorityButton.setOnClickListener { view13: View? ->
             if (view13 != null) {
                 utils.hideSoftKeyboard(view13)
             }
+
             priorityRadioGroup.visibility =
                 if (priorityRadioGroup.visibility == View.GONE) View.VISIBLE else View.GONE
-            priorityRadioGroup.setOnCheckedChangeListener { radioGroup: RadioGroup?, checkedId: Int ->
+            priorityRadioGroup.setOnCheckedChangeListener { radioGroup: RadioGroup, checkedId: Int ->
                 if (priorityRadioGroup.visibility == View.VISIBLE) {
                     selectedButtonId = checkedId
                     selectedRadioButton = dialog.findViewById(selectedButtonId)
@@ -142,23 +136,23 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
                 }
             }
         }
-        imageViewClose.setOnClickListener { dialog.dismiss()}
+
+        imageViewClose.setOnClickListener { dialog.dismiss() }
+        return Pair(saveBtn, enterTodo)
+    }
+
+    private fun showDialog() {
+        val (saveBtn: Button, enterTodo: EditText) = pair()
         saveBtn.setOnClickListener {
             val task = enterTodo.text.toString().trim()
-            if (!TextUtils.isEmpty(task) && dueDate != null && priority != null){
-                val myTask = Task(idTask++,
-                    task, priority!!,
-                    dueDate!!, Calendar.getInstance().time,
+            if (!TextUtils.isEmpty(task)){
+                val myTask = Task(idTask++, task, priority, dueDate, Calendar.getInstance().time,
                     false
                 )
                 tasks.add(myTask)
                 tasks.let { it1 -> context?.let { it2 -> prefs.saveTaskList(it1, it2) } }
                 taskAdpater.notifyDataSetChanged()
-
-
-
             }
-
             else {
                 Snackbar.make(saveBtn, R.string.empty_field, Snackbar.LENGTH_LONG)
                     .show()
@@ -168,83 +162,17 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
         }
 
     private fun editDialog(myTaskEdited:Task) {
-        val utils=Utils()
-        dialog.setContentView(R.layout.tododialog)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val imageViewClose: ImageView =dialog.findViewById(R.id.imageViewClose)
-        val saveBtn: Button =dialog.findViewById(R.id.save_btn)
-        calendar= Calendar.getInstance()
-        val enterTodo: EditText=dialog.findViewById(R.id.enter_todo_et)
-        val calendarButton: ImageButton=dialog.findViewById(R.id.today_calendar_button)
-        val priorityButton: ImageButton=dialog.findViewById(R.id.priority_todo_button)
-        val priorityRadioGroup: RadioGroup=dialog.findViewById(R.id.radioGroup_priority)
-        var selectedRadioButton: RadioButton
-        var selectedButtonId: Int
-        val calendarView:CalendarView=dialog.findViewById(R.id.calendar_view)
-        val calendarGroup: Group =dialog.findViewById(R.id.calendar_group)
-        val todayChip: Chip = dialog.findViewById(R.id.today_chip)
-        todayChip.setOnClickListener(this)
-        val tomorrowChip: Chip = dialog.findViewById(R.id.tomorrow_chip)
-        tomorrowChip.setOnClickListener(this)
-        val nextWeekChip: Chip = dialog.findViewById(R.id.next_week_chip)
-        nextWeekChip.setOnClickListener(this)
-        calendarButton.setOnClickListener { view12: View? ->
-            calendarGroup.visibility =
-                if (calendarGroup.visibility == View.GONE) View.VISIBLE else View.GONE
-            if (view12 != null) {
-                utils.hideSoftKeyboard(view12)
-            }
-        }
-        calendarView.setOnDateChangeListener { calendarView: CalendarView?, year: Int, month: Int, dayOfMoth: Int ->
-            calendar.clear()
-            calendar[year, month] = dayOfMoth
-            dueDate = calendar.time
-        }
-        priorityButton.setOnClickListener { view13: View? ->
-            if (view13 != null) {
-                utils.hideSoftKeyboard(view13)
-            }
-            priorityRadioGroup.visibility =
-                if (priorityRadioGroup.visibility == View.GONE) View.VISIBLE else View.GONE
-            priorityRadioGroup.setOnCheckedChangeListener { radioGroup: RadioGroup?, checkedId: Int ->
-                if (priorityRadioGroup.visibility == View.VISIBLE) {
-                    selectedButtonId = checkedId
-                    selectedRadioButton = dialog.findViewById(selectedButtonId)
-                    priority = if (selectedRadioButton.id == R.id.radioButton_high) {
-                        Priority.HIGH
-                    } else if (selectedRadioButton.id == R.id.radioButton_med) {
-                        Priority.MEDIUM
-                    } else if (selectedRadioButton.id == R.id.radioButton_low) {
-                        Priority.LOW
-                    } else {
-                        Priority.LOW
-                    }
-                } else {
-                    priority = Priority.LOW
-                }
-            }
-        }
-        imageViewClose.setOnClickListener { dialog.dismiss()}
+        val (saveBtn: Button, enterTodo: EditText) = pair()
         saveBtn.setOnClickListener {
             val task = enterTodo.text.toString().trim()
-            if (!TextUtils.isEmpty(task) && dueDate != null && priority != null){
-                val myTask = Task(idTask++,
-                    task, priority!!,
-                    dueDate!!, Calendar.getInstance().time,
-                    false
-                )
-                val updateTask: Task = myTaskEdited
-
+            if (!TextUtils.isEmpty(task)){
+                val updateTask : Task = myTaskEdited
                 updateTask.task = task
                 updateTask.dateCreated = Calendar.getInstance().time
-                updateTask.priority = priority as Priority
-                updateTask.dueDate = dueDate as Date
-
+                updateTask.priority = priority
+                updateTask.dueDate = dueDate
                 tasks.let { it1 -> context?.let { it2 -> prefs.saveTaskList(it1, it2) } }
                 taskAdpater.notifyDataSetChanged()
-
-
-
             }
 
             else {
@@ -254,7 +182,6 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
         }
         dialog.show()
     }
-
 
     companion object {
         /**
@@ -278,27 +205,19 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
     override fun onClick(v: View?) {
         val id = requireView().id
         if (id == R.id.today_chip) {
-            //set data for today
             calendar.add(Calendar.DAY_OF_YEAR, 0)
-            dueDate = calendar.getTime()
+            dueDate = calendar.time
         } else if (id == R.id.tomorrow_chip) {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
-            dueDate = calendar.getTime()
+            dueDate = calendar.time
         } else if (id == R.id.next_week_chip) {
             calendar.add(Calendar.DAY_OF_YEAR, 7)
-            dueDate = calendar.getTime()
+            dueDate = calendar.time
         }
     }
 
-    override fun onTodoClick(task: Task?) {
-
-        if (task != null) {
-            editDialog(task)
-        }
-
-    }
-
-    override fun onTodoDeleteClick(task: Task?) {
+    override fun onTodoClick(task: Task) { editDialog(task) }
+    override fun onTodoDeleteClick(task: Task) {
           tasks.remove(task)
           taskAdpater.notifyDataSetChanged()
     }
@@ -322,10 +241,7 @@ class PageTwoFragment : Fragment(),View.OnClickListener , OnTodoClickListener{
                 taskAdpater.filter.let { newText }
                 return false
             }
-
         })
         super.onCreateOptionsMenu(menu, inflater)
-
     }
-
 }
