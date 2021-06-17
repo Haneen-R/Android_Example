@@ -12,11 +12,7 @@ import com.google.gson.reflect.TypeToken
 class Prefs() {
     val LIST_KEY = "list_key"
     private lateinit var preferences: SharedPreferences
-
-    fun Prefs(context: Activity) {
-
-    }
-
+    
     fun saveTaskList(taskList: ArrayList<Task>,context: Context) {
         val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val gson=Gson()
